@@ -6,6 +6,11 @@ dependencies:
   override:
     - pip install -U pip
 
+test:
+  override:
+    - pip install flake8
+    - flake8 .
+
 deployment:
   release:
     tag: /v[0-9]+(\.[0-9]+)*/
