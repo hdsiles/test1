@@ -17,5 +17,5 @@ deployment:
     owner: rackerroush
     commands:
       - echo "Hello world"
-      - echo env
+      - echo $(env)
 
