@@ -24,18 +24,21 @@ fi
 
 
 
-CHG_LOG=$(git log --no-merges --format=%s | awk '/^Set version to '${VERSION}'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
+#CHG_LOG=$(git log --no-merges --format=%s | awk '/^Set version to '${VERSION}'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag' | awk '{key=$0; getline; print key " " $0;}')
 #CHG_LOG=$(git log --no-merges --format=%s | sed -e '/^Set version to '${VERSION}'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
 
+echo ${CHG_LOG}
 
-git checkout -b ${VERSION}
-echo $VERSION > version
-git add update_version.sh
-git add version
-git commit -m "Set version to $VERSION"
-#git push origin
-git push --set-upstream origin ${VERSION}
+exit 0
+#git checkout -b ${VERSION}
+#echo $VERSION > version
+#git add update_version.sh
+#git add version
+#git commit -m "Set version to $VERSION"
+##git push origin
+#git push --set-upstream origin ${VERSION}
 
-#API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
-API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s:%s", "base": "master"}' $VERSION $CHG_LOG $REPOSITORY $VERSION)
-curl -H "Authorization: token ${TOKEN}" --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
+#API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s:%s", "base": "master"}' $VERSION $CHG_LOG $REPOSITORY $VERSION)
+API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s:%s", "base": "master"}' $VERSION 'mytest' $REPOSITORY $VERSION)
+echo curl -H "Authorization: token ${TOKEN}" -X POST --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
+#echo ${API_JSON}
