@@ -15,6 +15,7 @@ else
     exit 0
 fi
 
+git checkout -b ${VERSION}
 echo $VERSION > version
 git add update_version.sh
 git add version
