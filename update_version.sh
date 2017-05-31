@@ -3,6 +3,7 @@
 VERSION=$1
 REPOSITORY='test1'
 OWNER='rackerroush'
+TOKEN=${GITHUB_PERSONAL_PUBLISH_TOKEN}
 
 # Test for correct x.x.x semantic version for input
 if [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]];
