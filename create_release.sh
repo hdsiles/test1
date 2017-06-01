@@ -22,8 +22,17 @@ else
     exit 0
 fi
 
+CHG_LOG=()
+while read line
+do
+    echo "- $line"
+    CHG_LOG+=("$line")
+    #CHG_LOG="$CHG_LOG\n- $line"
+done <<< $(git --no-pager log --no-merges --format=%s | awk '/^Set version to '"${VERSION}"'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
 
-API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
+COMMITS=$(printf "%s<br>" "${CHG_LOG[@]}")
+
+API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Changes in this release","draft": false,"prerelease": false}' $VERSION "$COMMITS" $VERSION)
 #curl --data "$API_JSON" https://api.github.com/repos/:owner/:repository/releases?access_token=:access_token
 curl -H "Authorization: token ${TOKEN}" --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases
 echo $API_JSON

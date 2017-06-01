@@ -27,16 +27,6 @@ git add version
 git commit -m "Set version to $VERSION"
 git push --set-upstream origin ${VERSION}
 
-CHG_LOG=()
-while read line
-do
-    echo "- $line"
-    CHG_LOG+=("$line")
-    #CHG_LOG="$CHG_LOG\n- $line"
-done <<< $(git --no-pager log --no-merges --format=%s | awk '/^Set version to '"${VERSION}"'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
-
-COMMITS=$(printf "%s<br>" "${CHG_LOG[@]}")
-
-API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s", "base": "master"}' $VERSION "$COMMITS" $VERSION)
+API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "Version changes to file for %s", "base": "master"}' $VERSION $VERSION $VERSION)
 echo $API_JSON
 curl -H "Authorization: token ${TOKEN}" -X POST --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
