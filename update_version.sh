@@ -20,11 +20,14 @@ else
     exit 0
 fi
 
-echo
-echo When creating the PR into master, here are the commit messages since the last version change:
-echo
+git checkout -b ${VERSION}
+echo $VERSION > version
+git add update_version.sh
+git add version
+git commit -m "Set version to $VERSION"
+git push --set-upstream origin ${VERSION}
+
 CHG_LOG=()
-#git --no-pager log --no-merges --format=%s | awk '/^Set version to '"${VERSION}"'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag' | 
 while read line
 do
     echo "- $line"
@@ -33,14 +36,6 @@ do
 done <<< $(git --no-pager log --no-merges --format=%s | awk '/^Set version to '"${VERSION}"'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
 
 COMMITS=$(printf "%s<br>" "${CHG_LOG[@]}")
-
-
-git checkout -b ${VERSION}
-echo $VERSION > version
-git add update_version.sh
-git add version
-git commit -m "Set version to $VERSION"
-git push --set-upstream origin ${VERSION}
 
 API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s", "base": "master"}' $VERSION "$COMMITS" $VERSION)
 echo $API_JSON
