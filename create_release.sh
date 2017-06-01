@@ -32,7 +32,7 @@ done <<< $(git --no-pager log --no-merges --format=%s | awk '/^Set version to '"
 
 COMMITS=$(printf "%s<br>" "${CHG_LOG[@]}")
 
-API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Changes in this release","draft": false,"prerelease": false}' $VERSION "$COMMITS" $VERSION)
+API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Changes in this release<br><br>%s","draft": false,"prerelease": false}' $VERSION $VERSION "$COMMITS")
 #curl --data "$API_JSON" https://api.github.com/repos/:owner/:repository/releases?access_token=:access_token
 curl -H "Authorization: token ${TOKEN}" --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases
 echo $API_JSON
