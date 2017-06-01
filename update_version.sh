@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 VERSION=$1
 REPOSITORY='test1'
 OWNER='rackerroush'
@@ -18,24 +20,23 @@ else
     exit 0
 fi
 
-
-
-
-
-
-
-CHG_LOG=$(git log --no-merges --format=%s | awk '/^Set version to '${VERSION}'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
-#CHG_LOG=$(git log --no-merges --format=%s | sed -e '/^Set version to '${VERSION}'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
-
-
 git checkout -b ${VERSION}
 echo $VERSION > version
 git add update_version.sh
 git add version
 git commit -m "Set version to $VERSION"
-#git push origin
 git push --set-upstream origin ${VERSION}
 
-#API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
-API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s:%s", "base": "master"}' $VERSION $CHG_LOG $REPOSITORY $VERSION)
-curl -H "Authorization: token ${TOKEN}" --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
+CHG_LOG=()
+while read line
+do
+    echo "- $line"
+    CHG_LOG+=("$line")
+    #CHG_LOG="$CHG_LOG\n- $line"
+done <<< $(git --no-pager log --no-merges --format=%s | awk '/^Set version to '"${VERSION}"'$/{flag=1;next}/^Set version to [0-9]+\.[0-9]+\.[0-9]+$/{flag=0}flag')
+
+COMMITS=$(printf "%s<br>" "${CHG_LOG[@]}")
+
+API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s", "base": "master"}' $VERSION "$COMMITS" $VERSION)
+echo $API_JSON
+curl -H "Authorization: token ${TOKEN}" -X POST --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
