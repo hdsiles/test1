@@ -42,6 +42,6 @@ git add version
 git commit -m "Set version to $VERSION"
 git push --set-upstream origin ${VERSION}
 
-API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s:%s", "base": "master"}' $VERSION "$COMMITS" $REPOSITORY $VERSION)
+API_JSON=$(printf '{"title": "%s", "body": "%s", "head": "%s", "base": "master"}' $VERSION "$COMMITS" $VERSION)
 echo $API_JSON
 curl -H "Authorization: token ${TOKEN}" -X POST --data "$API_JSON" https://api.github.com/repos/${OWNER}/${REPOSITORY}/pulls
